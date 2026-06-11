@@ -28,8 +28,15 @@ jobs:
         echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
         echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> .env
 
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-disabled: true
+
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: |
+        sed -i -e 's/\r$//' gradlew
+        chmod +x gradlew
 
     - name: Decode or Generate Keystore
       run: |
@@ -41,7 +48,7 @@ jobs:
         fi
 
     - name: Build with Gradle
-      run: ./gradlew assembleDebug --no-daemon
+      run: ./gradlew assembleDebug --stacktrace --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
